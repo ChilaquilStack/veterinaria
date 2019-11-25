@@ -20,7 +20,7 @@ const ListaCitas = ({citas, eliminarCita}) => {
                 
                 <div className="lista-citas">
                     
-                    {citas.map(cita => (
+                    {citas.map((cita,index) => (
                         
                         <Cita
                             

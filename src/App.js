@@ -1,103 +1,94 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import Header from './components/Header'
 import NuevaCita from './components/NuevaCita'
 import ListaCitas from './components/ListaCita'
 import './bootstrap.min.css';
 
-class App extends Component {
 
-  state = {
+const App = () => {
 
-    citas : []
+  const citasIniciales = JSON.parse(localStorage.getItem('citas'));
+
+  const [citas, setCitas] = useState(citasIniciales ? citasIniciales : []);
   
-  }
+  const crearNuevaCita = datos => {
 
-  crearNuevaCita = datos => {
-
-    const citas = [...this.state.citas, datos]
-
-    this.setState({
+    setCitas([
       
-      citas
+      ...citas,
+      
+      datos
     
-    })
+    ])
 
   }
 
-  eliminarCita = id => {
+  const eliminarCita = index => {
 
-    const citasActuales = [...this.state.citas]
+    const citasActuales = [...citas]
 
-    const citas = citasActuales.filter(cita => cita.id !== id)
+    citasActuales.splice(index, 1);
 
-    this.setState({
-      citas
-    })
+    setCitas([
+      ...citasActuales
+    ])
 
   }
 
-  componentDidMount(){
+
+  useEffect (() => {
 
     const citas_local_storage = localStorage.getItem('citas')
     
-    if(citas_local_storage){
+    if(citas_local_storage) {
       
-      this.setState({
-        
-        citas: JSON.parse(citas_local_storage)
+      localStorage.setItem('citas', JSON.stringify(citas))
       
-      })
-    
+    } else {
+      
+      localStorage.setItem('citas', JSON.stringify([]))
+      
     }
 
-  }
 
-  componentDidUpdate() {
-    
-    localStorage.setItem('citas', JSON.stringify(this.state.citas))
+  }, [citas]);
   
-  }
-
-  render(){
-
-    return (
+  return (
         
-        <div className="container">
+      <div className="container">
+        
+        <Header
           
-          <Header
-            
-            titulo="Administrador Pacientes Veterinaria"
-          
-          />
+          titulo="Administrador Pacientes Veterinaria"
+        
+        />
 
-          <div className="row">
+        <div className="row">
 
-              <div className="col-md-10 mx-auto">
+            <div className="col-md-10 mx-auto">
+              
+              <NuevaCita
+                crearNuevaCita = {crearNuevaCita}
+              />
+            </div>
+
+            <div className="mt-5 col-md-10 mx-auto">
+
+              <ListaCitas
                 
-                <NuevaCita
-                  crearNuevaCita = {this.crearNuevaCita}
-                />
-              </div>
+                citas = {citas}
 
-              <div className="mt-5 col-md-10 mx-auto">
+                eliminarCita = {eliminarCita}
+              
+              />
 
-                <ListaCitas
-                  
-                  citas = {this.state.citas}
+            </div>
 
-                  eliminarCita = {this.eliminarCita}
-                
-                />
-
-              </div>
-
-          </div>
-          
-      </div>
+        </div>
+        
+    </div>
     
-    );
-    
-  }
+  );
 
 }
 
